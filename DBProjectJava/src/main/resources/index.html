@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Course & Instructor Evaluation</title>
+    <!-- Link to external CSS file -->
+    <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Small top bar (shows username after login) -->
+        <div class="top-bar" id="topBar" style="display:none;">
+            <div>Logged in as: <span id="topBarUsername"></span></div>
+            <button class="btn-secondary" onclick="logout()">Log out</button>
+        </div>
+
+        <!-- ====== LOGIN SCREEN ====== -->
+        <section id="loginScreen" class="screen active">
+            <h1>Login</h1>
+            <p>Please enter your username and password to continue. (Admin: username=admin, password=admin)</p>
+            <div id="loginError" class="error" style="display:none;"></div>
+            <label for="username">University Username</label>
+            <input type="text" id="username" placeholder="e.g. joe.tekli" />
+
+            <label for="password">Password</label>
+            <input type="password" id="password" placeholder="Your password" />
+
+            <button class="btn-primary" onclick="handleLogin()">Login</button>
+        </section>
+
+        <!-- ====== MAIN MENU SCREEN ====== -->
+        <section id="mainMenuScreen" class="screen">
+            <h1>Welcome!</h1>
+            <p>What would you like to do today?</p>
+            <div class="menu-buttons">
+                <button class="btn-primary menu-btn" onclick="showCourseSearch()">
+                    Search Course Ratings & Reviews
+                </button>
+                <button class="btn-primary menu-btn" onclick="showInstructorSearch()">
+                    Search Instructor Ratings & Reviews
+                </button>
+                <button class="btn-primary menu-btn" onclick="showCoursesForEvaluation()">
+                    Fill Course & Instructor Evaluations
+                </button>
+            </div>
+        </section>
+
+        <!-- ====== ADMIN DASHBOARD SCREEN ====== -->
+        <section id="adminScreen" class="screen">
+            <h1>Admin Dashboard</h1>
+            <p>Manage students, instructors, courses, course registrations and student registrations.</p>
+
+            <div class="menu-buttons" style="margin-bottom: 20px;">
+                <button class="btn-primary menu-btn" onclick="showAdminTab('students')">Students</button>
+                <button class="btn-primary menu-btn" onclick="showAdminTab('instructors')">Instructors</button>
+                <button class="btn-primary menu-btn" onclick="showAdminTab('courses')">Courses</button>
+                <button class="btn-primary menu-btn" onclick="showAdminTab('registrations')">Course Registrations</button>
+                <button class="btn-primary menu-btn" onclick="showAdminTab('student-registrations')">Student Registrations</button>
+            </div>
+
+            <div id="adminError" class="error" style="display:none;"></div>
+
+            <!-- Students Tab -->
+            <div id="adminStudentsTab" style="display:none;">
+                <h2>Students</h2>
+                <button class="btn-secondary" onclick="loadAdminStudents()">Refresh</button>
+                <table style="margin-top: 15px;">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Address</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminStudentsBody"></tbody>
+                </table>
+
+                <h3 style="margin-top: 30px;">Add / Update Student</h3>
+                <label>Student ID</label>
+                <input id="admStudentID" type="text" />
+                <label>First Name</label>
+                <input id="admStudentFname" type="text" />
+                <label>Last Name</label>
+                <input id="admStudentLname" type="text" />
+                <label>Username</label>
+                <input id="admStudentUsername" type="text" />
+                <label>Password</label>
+                <input id="admStudentPassword" type="password" />
+                <label>Email</label>
+                <input id="admStudentEmail" type="text" />
+                <label>Phone</label>
+                <input id="admStudentPhone" type="text" />
+                <label>Address</label>
+                <input id="admStudentAddress" type="text" />
+                <div style="margin-top: 15px;">
+                    <button class="btn-primary" onclick="adminAddStudent()">Add</button>
+                    <button class="btn-secondary" onclick="adminUpdateStudent()">Update</button>
+                    <button class="btn-secondary" onclick="adminClearStudentForm()">Clear</button>
+                </div>
+            </div>
+
+            <!-- Instructors Tab -->
+            <div id="adminInstructorsTab" style="display:none;">
+                <h2>Instructors</h2>
+                <button class="btn-secondary" onclick="loadAdminInstructors()">Refresh</button>
+                
+                <!-- All Departments Display -->
+                <div id="instructorsDepartmentsListDisplay" style="margin-top: 20px;">
+                    <h3>Available Departments</h3>
+                    <p style="color: #6b7280; font-size: 14px; margin-bottom: 10px;">Select a department ID from the list below when adding an instructor:</p>
+                    <table style="margin-top: 10px;">
+                        <thead>
+                            <tr>
+                                <th>Department ID</th>
+                                <th>Department Name</th>
+                            </tr>
+                        </thead>
+                        <tbody id="instructorsDepartmentsListBody">
+                            <tr><td colspan="2">Loading departments...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <table style="margin-top: 20px;">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Address</th>
+                            <th>Department ID</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminInstructorsBody"></tbody>
+                </table>
+
+                <h3 style="margin-top: 30px;">Add / Update Instructor</h3>
+                <label>Instructor ID</label>
+                <input id="admInstructorID" type="text" />
+                <label>First Name</label>
+                <input id="admInstructorFname" type="text" />
+                <label>Last Name</label>
+                <input id="admInstructorLname" type="text" />
+                <label>Email</label>
+                <input id="admInstructorEmail" type="text" />
+                <label>Phone</label>
+                <input id="admInstructorPhone" type="text" />
+                <label>Address</label>
+                <input id="admInstructorAddress" type="text" />
+                <label>Department ID</label>
+                <input id="admInstructorDept" type="text" />
+                <div style="margin-top: 15px;">
+                    <button class="btn-primary" onclick="adminAddInstructor()">Add</button>
+                    <button class="btn-secondary" onclick="adminUpdateInstructor()">Update</button>
+                    <button class="btn-secondary" onclick="adminClearInstructorForm()">Clear</button>
+                </div>
+            </div>
+
+            <!-- Courses Tab -->
+            <div id="adminCoursesTab" style="display:none;">
+                <h2>Courses</h2>
+                <button class="btn-secondary" onclick="loadAdminCourses()">Refresh</button>
+                
+                <!-- All Programs Display -->
+                <div id="programsListDisplay" style="margin-top: 20px;">
+                    <h3>Available Programs</h3>
+                    <p style="color: #6b7280; font-size: 14px; margin-bottom: 10px;">Select a program ID from the list below when adding a course:</p>
+                    <table style="margin-top: 10px;">
+                        <thead>
+                            <tr>
+                                <th>Program ID</th>
+                                <th>Program Name</th>
+                            </tr>
+                        </thead>
+                        <tbody id="programsListBody">
+                            <tr><td colspan="2">Loading programs...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- All Coordinators Display -->
+                <div id="coordinatorsListDisplay" style="margin-top: 20px;">
+                    <h3>Available Coordinators</h3>
+                    <p style="color: #6b7280; font-size: 14px; margin-bottom: 10px;">Select a coordinator ID from the list below when adding a course:</p>
+                    <table style="margin-top: 10px;">
+                        <thead>
+                            <tr>
+                                <th>Coordinator ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Address</th>
+                                <th>Department ID</th>
+                            </tr>
+                        </thead>
+                        <tbody id="coordinatorsListBody">
+                            <tr><td colspan="6">Loading coordinators...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <table style="margin-top: 20px;">
+                    <thead>
+                        <tr>
+                            <th>CCRN</th>
+                            <th>Program ID</th>
+                            <th>Coordinator ID</th>
+                            <th>Course Name</th>
+                            <th>Credits</th>
+                            <th>Description</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminCoursesBody"></tbody>
+                </table>
+
+                <h3 style="margin-top: 30px;">Add / Update Course</h3>
+                <label>CCRN</label>
+                <input id="admCourseCCRN" type="text" />
+                <label>Program ID</label>
+                <input id="admCourseProgram" type="text" />
+                <label>Coordinator ID</label>
+                <input id="admCourseCoordinatorID" type="text" />
+                <label>Course Name</label>
+                <input id="admCourseName" type="text" />
+                <label>Credits</label>
+                <input id="admCourseCredits" type="text" />
+                <label>Description</label>
+                <input id="admCourseDesc" type="text" />
+                <div style="margin-top: 15px;">
+                    <button class="btn-primary" onclick="adminAddCourse()">Add</button>
+                    <button class="btn-secondary" onclick="adminUpdateCourse()">Update</button>
+                    <button class="btn-secondary" onclick="adminClearCourseForm()">Clear</button>
+                </div>
+            </div>
+
+            <!-- Registrations Tab -->
+            <div id="adminRegistrationsTab" style="display:none;">
+                <h2>Registrations</h2>
+                <button class="btn-secondary" onclick="loadAdminRegistrations()">Refresh</button>
+                
+                <!-- All Instructors Display -->
+                <div id="registrationsInstructorsListDisplay" style="margin-top: 20px;">
+                    <h3>Available Instructors</h3>
+                    <p style="color: #6b7280; font-size: 14px; margin-bottom: 10px;">Select an instructor ID from the list below when adding a registration:</p>
+                    <table style="margin-top: 10px;">
+                        <thead>
+                            <tr>
+                                <th>Instructor ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Address</th>
+                                <th>Department ID</th>
+                            </tr>
+                        </thead>
+                        <tbody id="registrationsInstructorsListBody">
+                            <tr><td colspan="6">Loading instructors...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- All Courses Display -->
+                <div id="registrationsCoursesListDisplay" style="margin-top: 20px;">
+                    <h3>Available Courses</h3>
+                    <p style="color: #6b7280; font-size: 14px; margin-bottom: 10px;">Select a CCRN from the list below when adding a registration:</p>
+                    <table style="margin-top: 10px;">
+                        <thead>
+                            <tr>
+                                <th>CCRN</th>
+                                <th>Course Name</th>
+                                <th>Program ID</th>
+                                <th>Coordinator ID</th>
+                                <th>Credits</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody id="registrationsCoursesListBody">
+                            <tr><td colspan="6">Loading courses...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <table style="margin-top: 20px;">
+                    <thead>
+                        <tr>
+                            <th>Registration ID</th>
+                            <th>CCRN</th>
+                            <th>Course Name</th>
+                            <th>Instructor ID</th>
+                            <th>Instructor Name</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminRegistrationsBody"></tbody>
+                </table>
+
+                <h3 style="margin-top: 30px;">Add Registration</h3>
+                <label>CCRN</label>
+                <input id="admRegistrationCCRN" type="text" />
+                <label>Instructor ID</label>
+                <input id="admRegistrationInstructorID" type="text" />
+                <div style="margin-top: 15px;">
+                    <button class="btn-primary" onclick="adminAddRegistration()">Add</button>
+                    <button class="btn-secondary" onclick="adminClearRegistrationForm()">Clear</button>
+                </div>
+            </div>
+
+            <!-- Student Registrations Tab -->
+            <div id="adminStudentRegistrationsTab" style="display:none;">
+                <h2>Student Registrations</h2>
+                <button class="btn-secondary" onclick="loadAdminStudentRegistrations()">Refresh</button>
+                
+                <!-- All Registrations Display -->
+                <div id="studentRegistrationsListDisplay" style="margin-top: 20px;">
+                    <h3>Available Registrations</h3>
+                    <p style="color: #6b7280; font-size: 14px; margin-bottom: 10px;">Select a registration ID from the list below when adding a student registration:</p>
+                    <table style="margin-top: 10px;">
+                        <thead>
+                            <tr>
+                                <th>Registration ID</th>
+                                <th>CCRN</th>
+                                <th>Course Name</th>
+                                <th>Instructor Name</th>
+                            </tr>
+                        </thead>
+                        <tbody id="studentRegistrationsListBody">
+                            <tr><td colspan="4">Loading registrations...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- All Students Display -->
+                <div id="studentRegistrationsStudentsListDisplay" style="margin-top: 20px;">
+                    <h3>Available Students</h3>
+                    <p style="color: #6b7280; font-size: 14px; margin-bottom: 10px;">Select a student ID from the list below when adding a student registration:</p>
+                    <table style="margin-top: 10px;">
+                        <thead>
+                            <tr>
+                                <th>Student ID</th>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Address</th>
+                            </tr>
+                        </thead>
+                        <tbody id="studentRegistrationsStudentsListBody">
+                            <tr><td colspan="7">Loading students...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <table style="margin-top: 20px;">
+                    <thead>
+                        <tr>
+                            <th>Student ID</th>
+                            <th>Student Name</th>
+                            <th>Username</th>
+                            <th>Registration ID</th>
+                            <th>CCRN</th>
+                            <th>Course Name</th>
+                            <th>Instructor ID</th>
+                            <th>Instructor Name</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminStudentRegistrationsBody"></tbody>
+                </table>
+
+                <h3 style="margin-top: 30px;">Add Student Registration</h3>
+                <label>Student ID</label>
+                <input id="admStudentRegistrationStudentID" type="text" />
+                <label>Registration ID</label>
+                <input id="admStudentRegistrationRegistrationID" type="text" />
+                <div style="margin-top: 15px;">
+                    <button class="btn-primary" onclick="adminAddStudentRegistration()">Add</button>
+                    <button class="btn-secondary" onclick="adminClearStudentRegistrationForm()">Clear</button>
+                </div>
+            </div>
+
+            <div style="margin-top: 30px;">
+                <button class="btn-secondary" onclick="logout()">Log out</button>
+            </div>
+        </section>
+
+        <!-- ====== COURSE SEARCH SCREEN ====== -->
+        <section id="courseSearchScreen" class="screen">
+            <h1>Search Course Ratings & Reviews</h1>
+            <p>Enter a course code CCRN to view its average rating and reviews.</p>
+            <button class="btn-secondary" onclick="backToMainMenu()" style="margin-bottom: 15px;">Back to Main
+                Menu</button>
+            <div id="courseSearchError" class="error" style="display:none;"></div>
+            <label for="courseSearchInput">Course Code (CCRN)</label>
+            <input type="text" id="courseSearchInput" placeholder="e.g. 11111"
+                onkeypress="if(event.key === 'Enter') searchCourse()" />
+            <button class="btn-primary" onclick="searchCourse()">Search</button>
+            <div id="courseSearchResults" style="margin-top: 20px;"></div>
+        </section>
+
+        <!-- ====== INSTRUCTOR SEARCH SCREEN ====== -->
+        <section id="instructorSearchScreen" class="screen">
+            <h1>Search Instructor Ratings & Reviews</h1>
+            <p>Enter an instructor name to view their average rating and reviews.</p>
+            <button class="btn-secondary" onclick="backToMainMenu()" style="margin-bottom: 15px;">Back to Main
+                Menu</button>
+            <div id="instructorSearchError" class="error" style="display:none;"></div>
+            <label for="instructorSearchInput">Instructor Name</label>
+            <input type="text" id="instructorSearchInput" placeholder="e.g. Smith"
+                onkeypress="if(event.key === 'Enter') searchInstructor()" />
+            <button class="btn-primary" onclick="searchInstructor()">Search</button>
+            <div id="instructorSearchResults" style="margin-top: 20px;"></div>
+        </section>
+
+        <!-- ====== COURSES SCREEN ====== -->
+        <section id="coursesScreen" class="screen">
+            <h1>Your Courses</h1>
+            <p>Select which course or instructor you want to evaluate.</p>
+            <button class="btn-secondary" onclick="backToMainMenu()" style="margin-bottom: 15px;">Back to Main
+                Menu</button>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Course Code</th>
+                        <th>Course Title</th>
+                        <th>Instructor</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="coursesTableBody">
+                    <!-- Filled by JavaScript -->
+                </tbody>
+            </table>
+        </section>
+
+        <!-- ====== COURSE EVALUATION SCREEN ====== -->
+        <section id="courseEvalScreen" class="screen">
+            <h1>Course Evaluation</h1>
+            <p id="courseEvalHeader"></p>
+
+            <!-- Progress bar for course evaluation -->
+            <div class="progress-wrapper">
+                <div class="progress-info" id="courseProgressText"></div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" id="courseProgressBar"></div>
+                </div>
+            </div>
+
+            <div id="courseQuestionContainer">
+                <!-- Question text + rating options go here -->
+            </div>
+
+            <div>
+                <button class="btn-secondary" onclick="backToCourses()">Back to Courses</button>
+                <button class="btn-secondary" id="coursePrevBtn" onclick="prevCourseQuestion()">Previous</button>
+                <button class="btn-primary" id="courseNextBtn" onclick="nextCourseQuestion()">Next</button>
+                <button class="btn-primary" id="courseSubmitBtn" onclick="submitCourseEvaluation()"
+                    style="display:none;">Submit</button>
+            </div>
+        </section>
+
+        <!-- ====== INSTRUCTOR EVALUATION SCREEN ====== -->
+        <section id="instructorEvalScreen" class="screen">
+            <h1>Instructor Evaluation</h1>
+            <p id="instructorEvalHeader"></p>
+
+            <!-- Progress bar for instructor evaluation -->
+            <div class="progress-wrapper">
+                <div class="progress-info" id="instrProgressText"></div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" id="instrProgressBar"></div>
+                </div>
+            </div>
+
+            <div id="instructorQuestionContainer">
+                <!-- Question text + rating options go here -->
+            </div>
+
+            <div>
+                <button class="btn-secondary" onclick="backToCourses()">Back to Courses</button>
+                <button class="btn-secondary" id="instrPrevBtn" onclick="prevInstructorQuestion()">Previous</button>
+                <button class="btn-primary" id="instrNextBtn" onclick="nextInstructorQuestion()">Next</button>
+                <button class="btn-primary" id="instrSubmitBtn" onclick="submitInstructorEvaluation()"
+                    style="display:none;">Submit</button>
+            </div>
+        </section>
+
+        <!-- ====== THANK YOU SCREEN ====== -->
+        <section id="thankYouScreen" class="screen">
+            <h1>Thank You!</h1>
+            <p>Your evaluation has been submitted successfully.</p>
+            <button class="btn-primary" onclick="goBackToCoursesFromThankYou()">Back to Courses</button>
+        </section>
+    </div>
+
+    <!-- Link to external JavaScript file -->
+    <script src="script.js"></script>
+</body>
+
+</html>
