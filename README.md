@@ -18,7 +18,6 @@ This repository contains the source code for a Student Assessment Website system
 
 ## Technology Stack
 
-- **Language**: Java
 - **Database**: MySQL
-- **Backend**: Java, 
+- **Backend**: Java (Maven), Servlet API, JSON
 - **Frontend**: HTML, CSS, JavaScript
